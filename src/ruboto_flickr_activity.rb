@@ -33,6 +33,7 @@ class RubotoFlickrActivity
   end
 
   def update_content(text)
+    ImageCache.clear
     view = findViewById(Ruboto::R::id::list_view)
     task = SearchTask.new(self, view, text)
     task.execute(view)
@@ -93,8 +94,8 @@ class SearchTask < AsyncTask
 
   def onPreExecute
     @dialog = ProgressDialog.new(@context)
-    @dialog.setTitle("Please wait")
-    @dialog.setMessage("Loading data...")
+    @dialog.setTitle("Please wait for images to load")
+    @dialog.setMessage("Searching flickr ...")
     @dialog.setProgressStyle(ProgressDialog::STYLE_HORIZONTAL)
     @dialog.setCancelable(false)
     @dialog.setMax(100)
@@ -122,8 +123,6 @@ class SearchTask < AsyncTask
 end
 
 class ImageLoadTask < AsyncTask
-  @@image_hash = {}
-
   def initialize(activity, adapter, item, view)
     super()
     @activity = activity
@@ -134,10 +133,26 @@ class ImageLoadTask < AsyncTask
 
   def doInBackground(param)
     url = @item.small_image_url
-    @@image_hash[url] ||= @adapter.fetch_image(url)
+    ImageCache.get(url) || ImageCache.put(url, @adapter.fetch_image(url))
   end
 
   def onPostExecute(param)
     @view.setImageDrawable(param)
+  end
+end
+
+class ImageCache
+  @@image_hash = {}
+
+  def self.put(key, image)
+    @@image_hash[key] = image
+  end
+
+  def self.get(key)
+    @@image_hash[key]
+  end
+
+  def self.clear
+    @@image_hash = {}
   end
 end
