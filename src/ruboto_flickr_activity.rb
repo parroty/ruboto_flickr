@@ -13,15 +13,16 @@ java_import "java.net.URL"
 
 ruboto_import_widgets :Button, :LinearLayout, :TextView
 
+IMAGE_PER_PAGE = 10
+
 class RubotoFlickrActivity
   def on_create(bundle)
     super
     setTitle 'Flickr Searcher'
     self.setContentView(Ruboto::R::layout::activity_main)
 
-    items = []
     view = findViewById(Ruboto::R::id::list_view)
-    view.setAdapter(IconicAdapter.new(self, items))
+    view.setAdapter(IconicAdapter.new(self, []))
 
     btn = findViewById(Ruboto::R::id::search_button)
     btn.setOnClickListener(MyOnClickListner.new(self))
@@ -29,7 +30,7 @@ class RubotoFlickrActivity
 
   def update_content(text)
     reader = FlickrReader.new
-    items = reader.search(:tag => text, :per_page => 10)
+    items = reader.search(:tag => text, :per_page => IMAGE_PER_PAGE)
 
     view = findViewById(Ruboto::R::id::list_view)
     view.setAdapter(IconicAdapter.new(self, items))
@@ -61,7 +62,7 @@ class IconicAdapter < ArrayAdapter
     row_item = @items[position]
 
     view = row.findViewById(Ruboto::R::id::icon)
-    task = AsyncHttpRequest.new(@activity, self, row_item, view)
+    task = ImageLoadTask.new(@activity, self, row_item, view)
     task.execute(view)
 
     size = row.findViewById(Ruboto::R::id::size)
@@ -80,7 +81,7 @@ class IconicAdapter < ArrayAdapter
   end
 end
 
-class AsyncHttpRequest < AsyncTask
+class ImageLoadTask < AsyncTask
   @@image_hash = {}
 
   def initialize(activity, adapter, item, view)
