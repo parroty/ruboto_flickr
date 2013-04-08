@@ -16,7 +16,7 @@ ruboto_import_widgets :Button, :LinearLayout, :TextView
 class RubotoFlickrActivity
   def on_create(bundle)
     super
-    setTitle 'Twitter Searcher'
+    setTitle 'Flickr Searcher'
     self.setContentView(Ruboto::R::layout::activity_main)
 
     items = []

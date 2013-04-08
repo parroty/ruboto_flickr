@@ -3,4 +3,8 @@
     <string name='app_name'>
         Ruboto Flickr
     </string>
+
+    <string name="icon">sample icon</string>
+    <string name="search_button">Search</string>
+    <string name="search_hint">Input search term...</string>
 </resources>
