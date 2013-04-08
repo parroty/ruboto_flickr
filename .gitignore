@@ -5,3 +5,5 @@ bin
 gen
 tmp
 local.properties
+spec/data/vcr
+src/flickr_api_key.rb

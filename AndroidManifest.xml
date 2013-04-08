@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?> 
+<?xml version='1.0' encoding='UTF-8'?>
 <manifest package='com.parroty.ruboto_flickr' android:versionCode='1' android:versionName='1.0' xmlns:android='http://schemas.android.com/apk/res/android'>
     <application android:icon='@drawable/ic_launcher' android:label='@string/app_name'>
         <activity android:label='@string/app_name' android:name='RubotoFlickrActivity'>
@@ -12,4 +12,5 @@
         <service android:exported='false' android:name='org.ruboto.RubotoService'/>
     </application>
     <uses-sdk android:minSdkVersion='8' android:targetSdkVersion='8'/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>
