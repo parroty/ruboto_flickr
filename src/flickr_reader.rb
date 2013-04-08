@@ -6,10 +6,13 @@ class FlickrReader
   def search(options)
     photos_xml = API.search(options[:tag], options[:per_page])
 
+    index = 0
     photos = Parser.parse_photos_search(photos_xml)
     photos.each do |photo|
       info_xml = API.get_info(photo.id)
       photo.info = Parser.parse_photos_get_info(info_xml)
+      yield index
+      index += 1
     end
     photos
   end

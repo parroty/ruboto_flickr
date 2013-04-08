@@ -8,6 +8,9 @@ java_import "android.widget.ArrayAdapter"
 java_import "android.widget.ListView"
 java_import "android.graphics.drawable.Drawable"
 java_import "android.os.AsyncTask"
+java_import "android.app.ProgressDialog"
+java_import "android.content.Context"
+java_import "android.content.DialogInterface"
 java_import "android.util.Log"
 java_import "java.net.URL"
 
@@ -29,11 +32,9 @@ class RubotoFlickrActivity
   end
 
   def update_content(text)
-    reader = FlickrReader.new
-    items = reader.search(:tag => text, :per_page => IMAGE_PER_PAGE)
-
     view = findViewById(Ruboto::R::id::list_view)
-    view.setAdapter(IconicAdapter.new(self, items))
+    task = SearchTask.new(self, view, text)
+    task.execute(view)
   end
 end
 
@@ -78,6 +79,44 @@ class IconicAdapter < ArrayAdapter
     input_stream.close
 
     drawable
+  end
+end
+
+class SearchTask < AsyncTask
+  def initialize(context, view, text)
+    super()
+    @context = context
+    @view    = view
+    @text    = text
+  end
+
+  def onPreExecute
+    @dialog = ProgressDialog.new(@context)
+    @dialog.setTitle("Please wait")
+    @dialog.setMessage("Loading data...")
+    @dialog.setProgressStyle(ProgressDialog::STYLE_HORIZONTAL)
+    @dialog.setCancelable(false)
+    @dialog.setMax(100)
+    @dialog.setProgress(0)
+    @dialog.show()
+  end
+
+  def onProgressUpdate(values)
+    @dialog.setProgress(values[0])
+  end
+
+  def doInBackground(param)
+    with_large_stack {
+      reader = FlickrReader.new
+      reader.search(:tag => @text, :per_page => IMAGE_PER_PAGE) do |index|
+        publishProgress((index + 1) * (100 / IMAGE_PER_PAGE))
+      end
+    }
+  end
+
+  def onPostExecute(items)
+    @dialog.dismiss
+    @view.setAdapter(IconicAdapter.new(@context, items))
   end
 end
 
