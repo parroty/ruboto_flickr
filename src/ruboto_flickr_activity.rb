@@ -26,6 +26,7 @@ class RubotoFlickrActivity
 
     view = findViewById(Ruboto::R::id::list_view)
     view.setAdapter(IconicAdapter.new(self, []))
+    view.setScrollingCacheEnabled(false)
 
     btn = findViewById(Ruboto::R::id::search_button)
     btn.setOnClickListener(MyOnClickListner.new(self))
