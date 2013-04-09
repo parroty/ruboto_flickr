@@ -56,7 +56,7 @@ class IconicAdapter < ArrayAdapter
     @activity = activity
     @items    = items
 
-    super(@activity, Ruboto::R::layout::row, Ruboto::R::id::label, @items.map(&:to_s))
+    super(@activity, Ruboto::R::layout::row, Ruboto::R::id::title, @items.map(&:headline))
   end
 
   def getView(position, convert_view, parent)
@@ -67,9 +67,9 @@ class IconicAdapter < ArrayAdapter
     task = ImageLoadTask.new(@activity, self, item, view)
     task.execute
 
-    size = row.findViewById(Ruboto::R::id::size)
-    text = "(#{item.info.owner}) #{item.info.description}"
-    size.setText(text)
+    content_view = row.findViewById(Ruboto::R::id::content)
+    content = "(#{item.info.owner}) #{item.info.description}"
+    content_view.setText(content)
 
     row
   end

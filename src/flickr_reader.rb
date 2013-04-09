@@ -83,6 +83,14 @@ class Photo
     @info = info
   end
 
+  def headline
+    if @info && @info.owner
+      "#{title} by #{@info.owner}"
+    else
+      title
+    end
+  end
+
   def to_s
     title
   end
