@@ -32,11 +32,11 @@ class RubotoFlickrActivity
     btn.setOnClickListener(MyOnClickListner.new(self))
   end
 
-  def update_content(text)
+  def update_list_view(search_word)
     ImageCache.clear
     view = findViewById(Ruboto::R::id::list_view)
-    task = SearchTask.new(self, view, text)
-    task.execute(view)
+    task = SearchTask.new(self, view, search_word)
+    task.execute
   end
 end
 
@@ -47,29 +47,28 @@ class MyOnClickListner
 
   def onClick(view)
     text_view = @activity.findViewById(Ruboto::R::id::search_text)
-    @activity.update_content("#{text_view.text}")
+    @activity.update_list_view("#{text_view.text}")
   end
 end
 
 class IconicAdapter < ArrayAdapter
   def initialize(activity, items)
     @activity = activity
-    @items = items
-    @text_items = items.map {|item| item.to_s }
+    @items    = items
 
-    super(@activity, Ruboto::R::layout::row, Ruboto::R::id::label, @text_items)
+    super(@activity, Ruboto::R::layout::row, Ruboto::R::id::label, @items.map(&:to_s))
   end
 
   def getView(position, convert_view, parent)
-    row = super
-    row_item = @items[position]
+    row  = super
+    item = @items[position]
 
     view = row.findViewById(Ruboto::R::id::icon)
-    task = ImageLoadTask.new(@activity, self, row_item, view)
-    task.execute(view)
+    task = ImageLoadTask.new(@activity, self, item, view)
+    task.execute
 
     size = row.findViewById(Ruboto::R::id::size)
-    text = "(#{row_item.info.owner}) #{row_item.info.description}"
+    text = "(#{item.info.owner}) #{item.info.description}"
     size.setText(text)
 
     row
@@ -85,11 +84,13 @@ class IconicAdapter < ArrayAdapter
 end
 
 class SearchTask < AsyncTask
-  def initialize(context, view, text)
+  PROGRESS_MAX = 100
+
+  def initialize(context, view, search_word)
     super()
     @context = context
-    @view    = view
-    @text    = text
+    @view = view
+    @search_word = search_word
   end
 
   def onPreExecute
@@ -98,20 +99,20 @@ class SearchTask < AsyncTask
     @dialog.setMessage("Searching flickr ...")
     @dialog.setProgressStyle(ProgressDialog::STYLE_HORIZONTAL)
     @dialog.setCancelable(false)
-    @dialog.setMax(100)
+    @dialog.setMax(PROGRESS_MAX)
     @dialog.setProgress(0)
-    @dialog.show()
+    @dialog.show
   end
 
   def onProgressUpdate(values)
-    @dialog.setProgress(values[0])
+    @dialog.setProgress(values.first)
   end
 
   def doInBackground(param)
     with_large_stack {
       reader = FlickrReader.new
-      reader.search(:tag => @text, :per_page => IMAGE_PER_PAGE) do |index|
-        publishProgress((index + 1) * (100 / IMAGE_PER_PAGE))
+      reader.search(:tag => @search_word, :per_page => IMAGE_PER_PAGE) do |index|
+        publishProgress((index + 1) * (PROGRESS_MAX / IMAGE_PER_PAGE))
       end
     }
   end
@@ -124,7 +125,7 @@ end
 
 class ImageLoadTask < AsyncTask
   def initialize(activity, adapter, item, view)
-    super()
+    super
     @activity = activity
     @adapter  = adapter
     @item     = item
