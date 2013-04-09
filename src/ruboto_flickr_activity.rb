@@ -125,7 +125,7 @@ end
 
 class ImageLoadTask < AsyncTask
   def initialize(activity, adapter, item, view)
-    super
+    super()
     @activity = activity
     @adapter  = adapter
     @item     = item

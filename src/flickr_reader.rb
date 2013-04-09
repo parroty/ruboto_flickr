@@ -11,7 +11,7 @@ class FlickrReader
     photos.each do |photo|
       info_xml = API.get_info(photo.id)
       photo.info = Parser.parse_photos_get_info(info_xml)
-      yield index
+      yield index if block_given?
       index += 1
     end
     photos
@@ -20,9 +20,10 @@ end
 
 class API
   FLICKR_API_URL = "http://www.flickr.com/services/rest/?api_key=%s&method=%s&%s"
+  ATTRIBUTION_LICENSE = '4'
 
   def self.search(tag, per_page = 10)
-    exec('flickr.photos.search', 'tags' => tag, 'license' => '4', 'per_page' => per_page.to_s)
+    exec('flickr.photos.search', 'tags' => tag, 'license' => ATTRIBUTION_LICENSE, 'per_page' => per_page.to_s)
   end
 
   def self.get_info(photo_id)
