@@ -18,4 +18,5 @@ Create "flickr_api_key.rb" just under "src" folder with the following content.
 
 ## Screenshot
 
-![htmlimage](http://parroty00.files.wordpress.com/2013/03/ruboto_lineart.png?w=400&h=300)
+![htmlimage](http://parroty00.files.wordpress.com/2013/04/flickr1.png?w=400&h300)
+![htmlimage](http://parroty00.files.wordpress.com/2013/04/flickr2.png?w=400&h300)
