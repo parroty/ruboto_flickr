@@ -92,7 +92,7 @@ class Photo
   end
 
   def to_s
-    title
+    headline
   end
 end
 

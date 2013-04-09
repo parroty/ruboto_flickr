@@ -68,7 +68,7 @@ class IconicAdapter < ArrayAdapter
     task.execute
 
     content_view = row.findViewById(Ruboto::R::id::content)
-    content = "(#{item.info.owner}) #{item.info.description}"
+    content = "#{item.info.description}\n\n#{item.info.url}"
     content_view.setText(content)
 
     row
